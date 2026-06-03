@@ -58,7 +58,7 @@ The system processes GitHub repository data structured as JSON records. Each rec
 graph TD
     Client[Client Applications / Postman] -->|HTTP/REST| API_GW[Express Application / API Router]
     
-    subgraph Backend System
+    subgraph BackendSystem [Backend System]
         API_GW --> AuthMW[Authentication Middleware JWT]
         API_GW --> RateLimit[Rate Limiter]
         API_GW --> ValidMW[Request Validation]
@@ -77,7 +77,7 @@ graph TD
     Aggregation --> MongoDB
     
     classDef sys fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    class Backend System sys;
+    class BackendSystem sys;
 ```
 
 ## 🔄 Request Flow Diagram
