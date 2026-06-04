@@ -3,13 +3,19 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 exports.getAllDatasets = catchAsync(async (req, res, next) => {
-  const datasets = await datasetService.getAllDatasets();
+  const result = await datasetService.getAllDatasets(req.query);
 
   res.status(200).json({
     status: 'success',
-    results: datasets.length,
+    results: result.datasets.length,
+    pagination: {
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages
+    },
     data: {
-      datasets
+      datasets: result.datasets
     }
   });
 });
