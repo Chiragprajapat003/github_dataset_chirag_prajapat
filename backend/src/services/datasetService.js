@@ -1,7 +1,30 @@
 const Dataset = require('../models/datasetModel');
+const APIFeatures = require('../utils/apiFeatures');
 
-exports.getAllDatasets = async (query = {}) => {
-  return await Dataset.find(query);
+exports.getAllDatasets = async (queryString = {}) => {
+  // Build a count query with the same filters (but without pagination)
+  const countFeatures = new APIFeatures(Dataset.find(), queryString)
+    .filter()
+    .search();
+  const total = await Dataset.countDocuments(countFeatures.query.getFilter());
+
+  // Build the main query with all features
+  const features = new APIFeatures(Dataset.find(), queryString)
+    .filter()
+    .search()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const datasets = await features.query.lean();
+
+  return {
+    datasets,
+    total,
+    page: features.page,
+    limit: features.limit,
+    totalPages: Math.ceil(total / features.limit)
+  };
 };
 
 exports.getDatasetById = async (id) => {
