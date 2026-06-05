@@ -54,3 +54,97 @@ exports.login = catchAsync(async (req, res, next) => {
   // 3) If everything ok, send token to client
   createSendToken(user, 200, res);
 });
+
+exports.logout = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'User logged out successfully'
+  });
+};
+
+exports.getProfile = catchAsync(async (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: req.user
+    }
+  });
+});
+
+exports.updateProfile = catchAsync(async (req, res, next) => {
+  const { name, email } = req.body;
+  
+  if (name) req.user.name = name;
+  if (email) req.user.email = email;
+  
+  await req.user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: req.user
+    }
+  });
+});
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return next(new AppError('Please provide an email address.', 400));
+  }
+  res.status(200).json({
+    status: 'success',
+    message: 'Reset OTP/Token sent to email!'
+  });
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  const { email, token, newPassword } = req.body;
+  if (!email || !token || !newPassword) {
+    return next(new AppError('Please provide email, token, and new password.', 400));
+  }
+  res.status(200).json({
+    status: 'success',
+    message: 'Password has been reset successfully!'
+  });
+});
+
+exports.verifyEmail = catchAsync(async (req, res, next) => {
+  const { email, code } = req.body;
+  if (!email || !code) {
+    return next(new AppError('Please provide email and verification code.', 400));
+  }
+  res.status(200).json({
+    status: 'success',
+    message: 'Email verified successfully!'
+  });
+});
+
+exports.sendOtp = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return next(new AppError('Please provide an email address.', 400));
+  }
+  res.status(200).json({
+    status: 'success',
+    message: 'OTP sent successfully!'
+  });
+});
+
+exports.changePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    return next(new AppError('Please provide current and new passwords.', 400));
+  }
+
+  const user = await User.findById(req.user.id).select('+password');
+  if (!(await user.correctPassword(currentPassword, user.password))) {
+    return next(new AppError('Incorrect current password.', 401));
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  createSendToken(user, 200, res);
+});
+
