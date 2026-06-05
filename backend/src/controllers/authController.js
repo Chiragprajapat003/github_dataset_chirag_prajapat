@@ -2,10 +2,11 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const config = require('../config');
 
 const signToken = id => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback-secret-key-for-dev', {
-    expiresIn: process.env.JWT_EXPIRES_IN || '30d'
+  return jwt.sign({ id }, config.jwt.secret, {
+    expiresIn: config.jwt.expiresIn
   });
 };
 
@@ -29,7 +30,7 @@ exports.register = catchAsync(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    role: req.body.role || 'user' // allow specifying role for setup purposes, usually shouldn't be here in production for general users
+    role: req.body.role || 'user'
   });
 
   createSendToken(newUser, 201, res);
