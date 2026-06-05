@@ -5,9 +5,8 @@
   <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express.js-404D59?style=for-the-badge" alt="Express.js" /></a>
   <a href="https://www.mongodb.com/"><img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" /></a>
   <a href="https://jwt.io/"><img src="https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens" alt="JWT" /></a>
-  <a href="https://www.postman.com/"><img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" alt="Postman" /></a>
+  <a href="https://documenter.getpostman.com/view/50839285/2sBXwqqA6K"><img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" alt="Postman" /></a>
 </p>
-
 <p align="center">
   An enterprise-grade, scalable RESTful API system designed to manage, analyze, and serve extensive GitHub repository datasets.
 </p>
@@ -340,7 +339,18 @@ npm run data:import
 
 ## 📚 API Documentation
 
-Detailed API documentation can be accessed via the Postman Public Workspace or the provided JSON collection in the `/docs` folder of this repository.
+Detailed interactive API documentation is published and accessible live on Postman:
+
+<p align="left">
+  <a href="https://documenter.getpostman.com/view/50839285/2sBXwqqA6K" target="_blank">
+    <img src="https://run.pstmn.io/button.svg" alt="Run in Postman" height="40" />
+  </a>
+</p>
+
+👉 **[Live Postman API Documentation](https://documenter.getpostman.com/view/50839285/2sBXwqqA6K)**
+
+Our interactive documentation contains detailed endpoint descriptions, query parameters, expected request payloads, and example responses for all categories.
+
 
 ---
 
