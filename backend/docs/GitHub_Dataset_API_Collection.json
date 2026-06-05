@@ -1,0 +1,304 @@
+{
+  "info": {
+    "name": "GitHub Dataset API",
+    "description": "Complete API collection for the GitHub Dataset API System.\n\nBuilt by Chirag Prajapat.\n\n## Setup\n1. Set `baseUrl` variable to your server URL (default: http://localhost:5000)\n2. Register a user via /auth/register\n3. Login via /auth/login — the token is auto-saved to `jwt_token` variable\n4. All protected routes will use the saved token automatically",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "API Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Check if the API server is running and healthy."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.token);",
+                  "    pm.test('Token saved to collection variable', function () {",
+                  "        pm.expect(jsonData.token).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Chirag Prajapat\",\n  \"email\": \"chirag@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Register a new user. The JWT token is automatically saved for subsequent requests."
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.token);",
+                  "    pm.test('Token saved to collection variable', function () {",
+                  "        pm.expect(jsonData.token).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"chirag@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Login with credentials. The JWT token is automatically saved."
+          }
+        },
+        {
+          "name": "Register - Validation Error Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-valid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Test Joi validation — should return 400 with field-level error messages."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dataset CRUD",
+      "item": [
+        {
+          "name": "Get All Datasets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sort", "value": "-createdAt", "disabled": true },
+                { "key": "fields", "value": "instruction,metadata", "disabled": true },
+                { "key": "search", "value": "express middleware", "disabled": true },
+                { "key": "metadata.source_type", "value": "javascript", "disabled": true },
+                { "key": "metadata.type", "value": "code_explanation", "disabled": true },
+                { "key": "metadata.is_readme", "value": "true", "disabled": true }
+              ]
+            },
+            "description": "Get all datasets with pagination, sorting, filtering, and search.\n\nEnable disabled query params to test different features."
+          }
+        },
+        {
+          "name": "Get Dataset by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets", ":id"],
+              "variable": [
+                { "key": "id", "value": "your-dataset-id-here" }
+              ]
+            },
+            "description": "Get a specific dataset by MongoDB ObjectId or recordId."
+          }
+        },
+        {
+          "name": "Create Dataset (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recordId\": \"test-record-001\",\n  \"instruction\": \"Explain the purpose of express.json() middleware\",\n  \"input\": \"app.use(express.json())\",\n  \"output\": \"It parses incoming requests with JSON payloads and makes the data available on req.body\",\n  \"metadata\": {\n    \"type\": \"code_explanation\",\n    \"code_element\": \"middleware\",\n    \"repo_name\": \"expressjs/express\",\n    \"file_path\": \"lib/express.js\",\n    \"source_type\": \"javascript\",\n    \"doc_type\": \"source_code\",\n    \"is_readme\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets"]
+            },
+            "description": "Create a new dataset record. Requires Admin JWT token."
+          }
+        },
+        {
+          "name": "Update Dataset (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instruction\": \"Updated instruction text\",\n  \"metadata\": {\n    \"type\": \"code_review\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets", ":id"],
+              "variable": [
+                { "key": "id", "value": "your-dataset-id-here" }
+              ]
+            },
+            "description": "Update an existing dataset record. Requires Admin JWT token."
+          }
+        },
+        {
+          "name": "Delete Dataset (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets", ":id"],
+              "variable": [
+                { "key": "id", "value": "your-dataset-id-here" }
+              ]
+            },
+            "description": "Delete a dataset record. Requires Admin JWT token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Bulk",
+      "item": [
+        {
+          "name": "Repository Distribution",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets/stats/repository-distribution",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets", "stats", "repository-distribution"]
+            },
+            "description": "Get count of records per repository name with type breakdown."
+          }
+        },
+        {
+          "name": "Language Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets/stats/language-metrics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets", "stats", "language-metrics"]
+            },
+            "description": "Get records grouped by source_type with average instruction/output text lengths."
+          }
+        },
+        {
+          "name": "Overall Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets/stats/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets", "stats", "overview"]
+            },
+            "description": "Get comprehensive dataset statistics: total records, type breakdown, readme stats, and average text lengths."
+          }
+        },
+        {
+          "name": "Bulk Import (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"records\": [\n    {\n      \"recordId\": \"bulk-001\",\n      \"instruction\": \"What is Node.js?\",\n      \"input\": \"\",\n      \"output\": \"Node.js is a JavaScript runtime built on Chrome's V8 engine.\",\n      \"metadata\": {\n        \"type\": \"definition\",\n        \"source_type\": \"javascript\",\n        \"doc_type\": \"documentation\",\n        \"is_readme\": false\n      }\n    },\n    {\n      \"recordId\": \"bulk-002\",\n      \"instruction\": \"Explain MongoDB aggregation\",\n      \"input\": \"\",\n      \"output\": \"Aggregation operations process data records and return computed results.\",\n      \"metadata\": {\n        \"type\": \"code_explanation\",\n        \"source_type\": \"javascript\",\n        \"doc_type\": \"documentation\",\n        \"is_readme\": false\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/datasets/bulk-import",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "datasets", "bulk-import"]
+            },
+            "description": "Bulk import an array of dataset records. Requires Admin JWT token."
+          }
+        }
+      ]
+    }
+  ]
+}
