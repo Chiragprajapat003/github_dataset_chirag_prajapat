@@ -56,3 +56,119 @@ exports.bulkImport = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+exports.getTypeAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    { $group: { _id: '$metadata.type', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getRepoAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    { $group: { _id: '$metadata.repo_name', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getSourceAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    { $group: { _id: '$metadata.source_type', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getFrameworkAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    {
+      $project: {
+        framework: {
+          $cond: {
+            if: { $regexMatch: { input: '$instruction', regex: /pytorch/i } },
+            then: 'PyTorch',
+            else: {
+              $cond: {
+                if: { $regexMatch: { input: '$instruction', regex: /tensorflow/i } },
+                then: 'TensorFlow',
+                else: 'Other/Unknown'
+              }
+            }
+          }
+        }
+      }
+    },
+    { $group: { _id: '$framework', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getLanguageAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    { $group: { _id: '$metadata.source_type', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getCodeAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    { $match: { 'metadata.code_element': { $exists: true, $ne: null } } },
+    { $group: { _id: '$metadata.code_element', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getDocAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    { $match: { 'metadata.doc_type': { $exists: true, $ne: null } } },
+    { $group: { _id: '$metadata.doc_type', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getReadmeAnalysis = catchAsync(async (req, res, next) => {
+  const stats = await Dataset.aggregate([
+    { $group: { _id: '$metadata.is_readme', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]);
+  res.status(200).json({ status: 'success', data: { stats } });
+});
+
+exports.getMlAnalysis = catchAsync(async (req, res, next) => {
+  const count = await Dataset.countDocuments({
+    $or: [
+      { instruction: /ml|machine learning|regression|classification/i },
+      { output: /ml|machine learning|regression|classification/i }
+    ]
+  });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      mlRecordCount: count,
+      message: 'Machine Learning datasets analysis overview'
+    }
+  });
+});
+
+exports.getAiAnalysis = catchAsync(async (req, res, next) => {
+  const count = await Dataset.countDocuments({
+    $or: [
+      { instruction: /ai|artificial intelligence|nlp|deep learning|transformers/i },
+      { output: /ai|artificial intelligence|nlp|deep learning|transformers/i }
+    ]
+  });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      aiRecordCount: count,
+      message: 'Artificial Intelligence datasets analysis overview'
+    }
+  });
+});
+

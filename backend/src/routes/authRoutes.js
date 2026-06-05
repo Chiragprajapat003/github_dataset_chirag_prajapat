@@ -12,4 +12,15 @@ router.use(authLimiter);
 router.post('/register', validate(registerSchema), authController.register);
 router.post('/login', validate(loginSchema), authController.login);
 
+const authMiddleware = require('../middlewares/authMiddleware');
+
+router.post('/logout', authController.logout);
+router.get('/profile', authMiddleware.protect, authController.getProfile);
+router.patch('/profile', authMiddleware.protect, authController.updateProfile);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password', authController.resetPassword);
+router.post('/verify-email', authController.verifyEmail);
+router.post('/send-otp', authController.sendOtp);
+router.post('/change-password', authMiddleware.protect, authController.changePassword);
+
 module.exports = router;
