@@ -1,6 +1,7 @@
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
+const config = require('../config');
 
 /**
  * Request Logger Middleware
@@ -26,7 +27,7 @@ const accessLogStream = fs.createWriteStream(
  * Returns the appropriate Morgan middleware based on environment.
  */
 const getLogger = () => {
-  if (process.env.NODE_ENV === 'production') {
+  if (config.env === 'production') {
     // Production: log to file in Apache combined format
     return morgan('combined', { stream: accessLogStream });
   }
