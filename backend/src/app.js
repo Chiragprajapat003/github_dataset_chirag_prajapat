@@ -4,6 +4,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const { apiLimiter } = require('./middlewares/rateLimiter');
+const getLogger = require('./middlewares/requestLogger');
 
 // Route imports
 const routes = require('./routes');
@@ -13,11 +15,17 @@ const app = express();
 
 // Global Middlewares
 
+// Request logging (Morgan)
+app.use(getLogger());
+
 // Set security HTTP headers
 app.use(helmet());
 
 // Enable CORS
 app.use(cors());
+
+// Rate limiting - prevent brute-force & DDoS attacks
+app.use('/api', apiLimiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
