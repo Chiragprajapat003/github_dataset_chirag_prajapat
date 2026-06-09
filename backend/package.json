@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "data:import": "node src/scripts/importData.js --import",
     "data:delete": "node src/scripts/importData.js --delete",
+    "verify": "node src/scripts/verifyRoutes.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

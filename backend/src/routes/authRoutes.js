@@ -10,6 +10,10 @@ const router = express.Router();
 router.use(authLimiter);
 
 router.post('/register', validate(registerSchema), authController.register);
+router.options('/login', (req, res) => {
+  res.setHeader('Allow', 'POST, OPTIONS, HEAD');
+  res.status(200).send();
+});
 router.post('/login', validate(loginSchema), authController.login);
 
 const authMiddleware = require('../middlewares/authMiddleware');

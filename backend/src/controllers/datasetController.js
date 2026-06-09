@@ -1,6 +1,29 @@
+const Dataset = require('../models/datasetModel');
 const datasetService = require('../services/datasetService');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+
+exports.mapSortFields = (sortStr) => {
+  if (!sortStr) return sortStr;
+  const fieldMapping = {
+    repo: 'metadata.repo_name',
+    type: 'metadata.type',
+    source: 'metadata.source_type',
+    docType: 'metadata.doc_type',
+    codeElement: 'metadata.code_element',
+    isReadme: 'metadata.is_readme'
+  };
+
+  return sortStr
+    .split(',')
+    .map(field => {
+      const isDesc = field.startsWith('-');
+      const cleanField = isDesc ? field.substring(1) : field;
+      const mappedField = fieldMapping[cleanField] || cleanField;
+      return isDesc ? `-${mappedField}` : mappedField;
+    })
+    .join(' ');
+};
 
 exports.getAllDatasets = catchAsync(async (req, res, next) => {
   const result = await datasetService.getAllDatasets(req.query);
@@ -89,7 +112,7 @@ const sendPaginatedQuery = async (mongoQuery, req, res) => {
   // Apply sort if present in request query
   let finalQuery = mongoQuery.skip(skip).limit(limit);
   if (req.query.sort) {
-    const sortBy = req.query.sort.split(',').join(' ');
+    const sortBy = exports.mapSortFields(req.query.sort);
     finalQuery = finalQuery.sort(sortBy);
   }
 
