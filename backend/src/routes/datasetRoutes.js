@@ -13,6 +13,11 @@ const handleOptions = (allowedMethods) => (req, res) => {
 };
 
 // 1. OPTIONS & HEAD handlers
+router.options('/system/health', handleOptions(['GET', 'OPTIONS', 'HEAD']));
+router.get('/system/health', (req, res) => {
+  res.status(200).json({ status: 'success', message: 'Dataset API system is healthy' });
+});
+
 router.options('/', handleOptions(['GET', 'POST', 'OPTIONS', 'HEAD']));
 router.options('/:id', handleOptions(['GET', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD']));
 

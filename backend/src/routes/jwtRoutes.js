@@ -9,6 +9,11 @@ router.post('/verify-token', jwtController.verifyToken);
 router.post('/refresh-token', jwtController.refreshToken);
 router.delete('/revoke-token', jwtController.revokeToken);
 
+router.options('/profile', (req, res) => {
+  res.setHeader('Allow', 'GET, OPTIONS, HEAD');
+  res.status(200).send();
+});
+
 // Protected routes
 router.get('/profile', authMiddleware.protect, jwtController.getProfile);
 router.get('/dashboard', authMiddleware.protect, jwtController.getDashboard);

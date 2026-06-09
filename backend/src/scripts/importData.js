@@ -44,7 +44,15 @@ const importData = async () => {
     const records = JSON.parse(rawData);
 
     // Handle both array and single-object formats
-    const dataArray = Array.isArray(records) ? records : [records];
+    let dataArray = Array.isArray(records) ? records : [records];
+
+    // Map the 'id' field to 'recordId' as required by the schema
+    dataArray = dataArray.map(record => {
+      if (record.id && !record.recordId) {
+        record.recordId = record.id;
+      }
+      return record;
+    });
 
     console.log(`📦 Importing ${dataArray.length} records...`);
 

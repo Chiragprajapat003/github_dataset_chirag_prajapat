@@ -9,18 +9,72 @@ class APIFeatures {
     const excludedFields = ['page', 'sort', 'limit', 'fields', 'search'];
     excludedFields.forEach(el => delete queryObj[el]);
 
-    // Advanced filtering for nested metadata fields
-    // Supports: ?metadata.type=code_explanation&metadata.is_readme=true
     const filterObj = {};
+    const standardMapping = {
+      type: 'metadata.type',
+      repo: 'metadata.repo_name',
+      source: 'metadata.source_type',
+      docType: 'metadata.doc_type',
+      codeElement: 'metadata.code_element',
+      isReadme: 'metadata.is_readme'
+    };
+
+    // 1. Handle special regex filters (language, framework, task, category)
+    if (queryObj.language) {
+      filterObj.$and = filterObj.$and || [];
+      filterObj.$and.push({
+        $or: [
+          { 'metadata.source_type': new RegExp(queryObj.language, 'i') },
+          { 'metadata.file_path': new RegExp('\\.' + queryObj.language + '$', 'i') },
+          { instruction: new RegExp(queryObj.language, 'i') }
+        ]
+      });
+      delete queryObj.language;
+    }
+
+    if (queryObj.framework) {
+      filterObj.$and = filterObj.$and || [];
+      filterObj.$and.push({
+        $or: [
+          { instruction: new RegExp(queryObj.framework, 'i') },
+          { output: new RegExp(queryObj.framework, 'i') }
+        ]
+      });
+      delete queryObj.framework;
+    }
+
+    if (queryObj.task) {
+      filterObj.$and = filterObj.$and || [];
+      filterObj.$and.push({
+        $or: [
+          { instruction: new RegExp(queryObj.task, 'i') },
+          { output: new RegExp(queryObj.task, 'i') }
+        ]
+      });
+      delete queryObj.task;
+    }
+
+    if (queryObj.category) {
+      filterObj.$and = filterObj.$and || [];
+      filterObj.$and.push({
+        $or: [
+          { 'metadata.type': new RegExp(queryObj.category, 'i') },
+          { instruction: new RegExp(queryObj.category, 'i') }
+        ]
+      });
+      delete queryObj.category;
+    }
+
+    // 2. Map standard fields and format values (booleans)
     Object.keys(queryObj).forEach(key => {
-      // Convert string 'true'/'false' to boolean for is_readme
-      if (queryObj[key] === 'true') {
-        filterObj[key] = true;
-      } else if (queryObj[key] === 'false') {
-        filterObj[key] = false;
-      } else {
-        filterObj[key] = queryObj[key];
+      const mappedKey = standardMapping[key] || key;
+      let value = queryObj[key];
+      if (value === 'true') {
+        value = true;
+      } else if (value === 'false') {
+        value = false;
       }
+      filterObj[mappedKey] = value;
     });
 
     this.query = this.query.find(filterObj);
@@ -38,7 +92,23 @@ class APIFeatures {
 
   sort() {
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(',').join(' ');
+      const fieldMapping = {
+        repo: 'metadata.repo_name',
+        type: 'metadata.type',
+        source: 'metadata.source_type',
+        docType: 'metadata.doc_type',
+        codeElement: 'metadata.code_element',
+        isReadme: 'metadata.is_readme'
+      };
+      const sortBy = this.queryString.sort
+        .split(',')
+        .map(field => {
+          const isDesc = field.startsWith('-');
+          const cleanField = isDesc ? field.substring(1) : field;
+          const mappedField = fieldMapping[cleanField] || cleanField;
+          return isDesc ? `-${mappedField}` : mappedField;
+        })
+        .join(' ');
       this.query = this.query.sort(sortBy);
     } else {
       this.query = this.query.sort('-createdAt');
