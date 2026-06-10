@@ -139,41 +139,49 @@ module.exports = mongoose.model('Dataset', DatasetSchema);
 
 ## 📂 Folder Structure
 
-The project strictly follows a modular, feature-based directory structure to ensure separation of concerns.
+The project is split into a modular backend service and a modern React frontend dashboard:
 
 ```text
-github-dataset-api/
-├── src/
-│   ├── config/          # Database, Environment configurations
-│   ├── controllers/     # Route handlers (Req/Res logic)
-│   ├── middlewares/     # Custom Express middlewares (Auth, Error, Logging)
-│   ├── models/          # Mongoose schema definitions
-│   ├── routes/          # API route definitions
-│   ├── services/        # Business logic and database interactions
-│   ├── scripts/         # Dataset import and seeding scripts
-│   ├── utils/           # Helper functions, response formatters, constants
-│   ├── validations/     # Joi/Express-validator schemas
-│   └── app.js           # Express app setup and middleware registration
-├── logs/                # Application log files
-├── .env                 # Environment variables
-├── .gitignore
-├── package.json
-├── README.md
-└── server.js            # Entry point
+github_dataset_chirag_prajapat/
+├── backend/             # Node.js + Express API Backend
+│   ├── src/
+│   │   ├── config/      # DB Connection configs
+│   │   ├── controllers/ # Controllers (Req/Res logic)
+│   │   ├── middlewares/ # Auth & Rate limiters
+│   │   ├── models/      # Mongoose models
+│   │   ├── routes/      # Routers (including OPTIONS preflights)
+│   │   ├── services/    # Business logic layer
+│   │   ├── scripts/     # Auto-import & CLI verification scripts
+│   │   ├── utils/       # Mappings & apiFeatures
+│   │   └── validations/ # Joi Schemas
+│   ├── server.js        # Backend Server start script
+│   └── package.json
+│
+├── frontend/            # React + Vite + Tailwind Client
+│   ├── src/
+│   │   ├── components/  # Layouts, guards, SEO utilities
+│   │   ├── pages/       # Login, Register, Catalog, Charts, Profile
+│   │   ├── services/    # Axios client with interceptors
+│   │   └── store/       # Redux Toolkit State Store
+│   ├── index.html       # HTML entry layout
+│   └── package.json
+└── README.md
 ```
 
 ## 🛠️ Technology Stack
 
 | Category | Technology |
 | :--- | :--- |
-| **Runtime Environment** | Node.js |
+| **Backend Runtime** | Node.js |
 | **Web Framework** | Express.js |
-| **Database** | MongoDB |
-| **ODM / ORM** | Mongoose |
-| **Authentication** | JSON Web Tokens (JWT) |
-| **Security & Cryptography** | bcrypt, helmet, cors |
-| **API Testing** | Postman |
-| **Environment Management** | dotenv |
+| **Database** | MongoDB + Mongoose |
+| **Frontend Framework** | Vite + React 18 |
+| **State Management** | Redux Toolkit |
+| **Styling & Icons** | Tailwind CSS + Material UI + Lucide Icons |
+| **Forms & Validation** | Formik + Yup |
+| **Data Visualization** | Recharts |
+| **API Communications** | Axios |
+| **Security & Auth** | JSON Web Tokens (JWT) + bcrypt |
 
 ## 📦 API Modules
 
