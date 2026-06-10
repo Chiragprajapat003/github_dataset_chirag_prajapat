@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Custom scrollbar styling for slick premium aesthetics */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-github-lightBorder dark:bg-github-border rounded-full hover:bg-github-lightTextMuted dark:hover:bg-github-textMuted;
+  }
+  
+  body {
+    @apply antialiased selection:bg-github-blue selection:text-github-bgHeader bg-github-lightBg text-github-lightText dark:bg-github-bg dark:text-github-text transition-colors duration-150;
+  }
+}
