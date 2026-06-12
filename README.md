@@ -11,6 +11,10 @@
   An enterprise-grade, scalable RESTful API system designed to manage, analyze, and serve extensive GitHub repository datasets.
 </p>
 
+<p align="center">
+  🌐 <strong>Live Backend URL:</strong> <a href="https://github-dataset-chirag-prajapat.onrender.com" target="_blank">https://github-dataset-chirag-prajapat.onrender.com</a>
+</p>
+
 ---
 
 ## 📖 Project Overview
@@ -356,6 +360,8 @@ Detailed interactive API documentation is published and accessible live on Postm
 </p>
 
 👉 **[Live Postman API Documentation](https://documenter.getpostman.com/view/50839285/2sBXwqqA6K)**
+
+👉 **[Live Backend API URL](https://github-dataset-chirag-prajapat.onrender.com)**
 
 Our interactive documentation contains detailed endpoint descriptions, query parameters, expected request payloads, and example responses for all categories.
 
