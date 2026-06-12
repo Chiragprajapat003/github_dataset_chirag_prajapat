@@ -26,7 +26,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const originalRequest = error.config;
-    
+
     // Auto logout if backend reports session expired or token is invalid
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       localStorage.removeItem('jwt_token');
